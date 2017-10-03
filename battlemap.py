@@ -7,7 +7,6 @@ from enum import Enum
 
 class Battlemap(object):
 
-    
     def get_cookies(self):
         """ opens a fake browser to get the cookies needed """
         from robobrowser import RoboBrowser
@@ -28,7 +27,7 @@ class Battlemap(object):
 
         self.laravel_token = browser.session.cookies.get('laravel_session')
         self.xsrf = browser.session.cookies.get('XSRF-TOKEN')
-        self.cookietimeout = time.clock() + 60*60*1.95
+        self.cookietimeout = time.time() + 60*60*1.95
 
     def __init__ (self):
         self.session = requests.Session()
@@ -78,7 +77,8 @@ class Battlemap(object):
 
     def fetch(self, url , maptype):
         # get new cookies if needed
-        if self.cookietimeout < time.clock():
+        if self.cookietimeout < time.time():
+            logging.info("cookies too old, trying to get new ones")
             self.get_cookies()
 
         retrys = 3
@@ -96,7 +96,7 @@ class Battlemap(object):
 
                 self.xsrf = re.findall(r'XSRF-TOKEN=(\S*);', request.headers['set-cookie'])[0]
                 self.laravel_token = re.findall(r'laravel_session=(\S*);',request.headers['set-cookie'])[0]
-                self.cookietimeout = time.clock() + 60*60* 1.95
+                self.cookietimeout = time.time() + 60*60* 1.95
 
                 return request.json()
 
