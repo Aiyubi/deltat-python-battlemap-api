@@ -94,9 +94,10 @@ class Battlemap(object):
                 request = self.session.get(url, headers= {'cookie': cookie_header})
                 logging.info("request answer: " + str(request.content) )
 
-                self.xsrf = re.findall(r'XSRF-TOKEN=(\S*);', request.headers['set-cookie'])[0]
-                self.laravel_token = re.findall(r'laravel_session=(\S*);',request.headers['set-cookie'])[0]
-                self.cookietimeout = time.time() + 60*60* 1.95
+                if 'set-cookie' in request.headers.keys():
+                    self.xsrf = re.findall(r'XSRF-TOKEN=(\S*);', request.headers['set-cookie'])[0]
+                    self.laravel_token = re.findall(r'laravel_session=(\S*);',request.headers['set-cookie'])[0]
+                    self.cookietimeout = time.time() + 60*60* 1.95
 
                 return request.json()
 
